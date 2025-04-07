@@ -1,0 +1,198 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
+/* Define Color Scheme and Font Variables */
+:root {
+  --primary-color: #007BFF;
+  --white-color: #FFFFFF;
+  --light-gray-color: #F5F5F5;
+  --text-color-dark: #333; /* For light backgrounds */
+  --text-color-light: #f1f1f1; /* For dark backgrounds */
+  --background-dark: #242424; /* Default dark bg */
+  --background-light: var(--white-color);
+
+  --font-family-base: 'Open Sans', system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  /* Default to light theme */
+  color-scheme: light;
+  --text-color: var(--text-color-dark);
+  --background-color: var(--background-light);
+  --card-bg-color: var(--light-gray-color);
+  --header-footer-bg: var(--primary-color);
+  --header-footer-text: var(--white-color);
+  --nav-link-color: var(--white-color);
+  --nav-link-hover-color: var(--light-gray-color);
+  --button-bg: var(--primary-color);
+  --button-text: var(--white-color);
+  --button-hover-bg: #0056b3; /* Darker blue */
+}
+
+/* Dark theme preferences */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --text-color: var(--text-color-light);
+    --background-color: var(--background-dark);
+    --card-bg-color: #3a3a3a;
+    --header-footer-bg: #1a1a1a;
+    --header-footer-text: var(--text-color-light);
+    --nav-link-color: var(--text-color-light);
+    --nav-link-hover-color: var(--primary-color);
+    --button-bg: var(--primary-color);
+    --button-text: var(--white-color);
+    --button-hover-bg: #0056b3;
+  }
+}
+
+/* Basic Reset and Body Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-base);
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* General Layout */
+#app { /* Main content container */
+  flex-grow: 1; /* Allows footer to stick to bottom */
+  max-width: 1200px; /* Max width for content */
+  width: 90%; /* Responsive width */
+  margin: 2rem auto; /* Centering and spacing */
+  padding: 1rem;
+}
+
+/* Header and Navigation */
+header {
+  background-color: var(--header-footer-bg);
+  color: var(--header-footer-text);
+  padding: 1rem 5%; /* Padding relative to viewport width */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+header h1 {
+  font-size: 1.8em;
+  margin: 0;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 1rem; /* Spacing between nav items */
+}
+
+nav a {
+  color: var(--nav-link-color);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem;
+  transition: color 0.2s ease-in-out;
+}
+
+nav a:hover,
+nav a:focus {
+  color: var(--nav-link-hover-color);
+  text-decoration: underline;
+}
+
+/* Main Content Sections */
+main section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--card-bg-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+main h2 {
+  margin-bottom: 1rem;
+  color: var(--primary-color); /* Use primary color for headings */
+}
+
+main h3 {
+    margin-bottom: 0.8rem;
+}
+
+/* Footer */
+footer {
+  background-color: var(--header-footer-bg);
+  color: var(--header-footer-text);
+  text-align: center;
+  padding: 1rem;
+  margin-top: auto; /* Pushes footer to bottom */
+}
+
+/* Basic Form Styling */
+form {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap; /* Allow wrapping */
+}
+
+input[type="text"] {
+    flex-grow: 1;
+    padding: 0.6em 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1em;
+}
+
+/* Basic Button Styling */
+button {
+  border-radius: 4px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  cursor: pointer;
+  transition: background-color 0.25s, border-color 0.25s;
+}
+button:hover {
+  background-color: var(--button-hover-bg);
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Utility Classes (Optional) */
+.text-center {
+  text-align: center;
+}
+
+/* Responsive Adjustments (Example) */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  nav ul {
+    margin-top: 0.5rem;
+    flex-direction: column; /* Stack nav items vertically */
+    gap: 0.5rem;
+  }
+  #app {
+    width: 95%;
+    margin: 1rem auto;
+  }
+}

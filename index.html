@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/style.css">
+    <title>Home - Travel Explorer</title>
+  </head>
+  <body>
+    <header>
+        <h1>Travel Explorer</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/destination.html">Destination</a></li>
+                <li><a href="/favorites.html">Favorites</a></li>
+                <li><a href="/about.html">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="app">
+        <section id="search">
+            <h2>Find Your Next Destination</h2>
+            <form id="search-form">
+                <input type="text" id="search-input" placeholder="Enter city or country..." required>
+                <button type="submit">Search</button>
+            </form>
+        </section>
+
+        <section id="featured-destinations">
+            <h2>Featured Destinations</h2>
+            <div id="featured-list">
+                <!-- Featured destinations will be loaded here -->
+                <p>Loading featured destinations...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Travel Explorer</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script> <!-- Corrected path -->
+    <script type="module" src="/src/home.js"></script>
+  </body>
+</html>
