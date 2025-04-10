@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" /> <!-- Default Vite icon, replace later -->
+    <title>Destination Details - Travel Explorer</title> <!-- Added CSS link -->
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+  <script type="module" crossorigin src="/Final-Project-Work/assets/destination-B8b5J5lT.js"></script>
+  <link rel="modulepreload" crossorigin href="/Final-Project-Work/assets/main-BY_aWrLz.js">
+  <link rel="stylesheet" crossorigin href="/Final-Project-Work/assets/main-BuEg_cTU.css">
+</head>
+<body class="destination-page"> <!-- Add class for specific styling -->
+    <header>
+        <h1>Travel Explorer</h1>
+        <nav>
+            <ul>
+                <li><a href="/Final-Project-Work/">Home</a></li>
+                <li><a href="/Final-Project-Work/destination.html">Destination</a></li> <!-- Link might change based on dynamic routing -->
+                <li><a href="/Final-Project-Work/favorites.html">Favorites</a></li>
+                <li><a href="/Final-Project-Work/about.html">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="app">
+        <h2 id="destination-name">Destination Name Placeholder</h2>
+        <button id="favorite-button">Add to Favorites</button>
+
+        <section id="weather">
+            <h3>Weather</h3>
+            <div id="weather-info">Loading weather...</div>
+        </section>
+
+        <section id="attractions">
+            <h3>Attractions</h3>
+            <div class="attractions-grid-container"> <!-- Added container div -->
+                <ul id="attractions-list"><li>Loading attractions...</li></ul>
+            </div>
+        </section>
+
+        <section id="map">
+            <h3>Map</h3>
+            <div id="map-container" style="height: 300px; background-color: #eee;">Map Placeholder</div>
+        </section>
+
+        <section id="currency">
+            <h3>Currency</h3>
+            <div id="currency-info">Loading currency info...</div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Travel Explorer</p>
+    </footer>
+ <!-- Corrected path -->
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+</body>
+</html>
