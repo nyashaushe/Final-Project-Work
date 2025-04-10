@@ -25,6 +25,8 @@
   --button-bg: var(--primary-color);
   --button-text: var(--white-color);
   --button-hover-bg: #0056b3; /* Darker blue */
+  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --card-border-radius: 8px;
 }
 
 /* Dark theme preferences */
@@ -41,6 +43,7 @@
     --button-bg: var(--primary-color);
     --button-text: var(--white-color);
     --button-hover-bg: #0056b3;
+    --card-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -116,8 +119,9 @@ main section {
   margin-bottom: 2rem;
   padding: 1.5rem;
   background-color: var(--card-bg-color);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow);
+  animation: fadeIn 0.5s ease-in-out; /* Add fade-in animation */
 }
 
 main h2 {
@@ -180,7 +184,55 @@ button:focus-visible {
   text-align: center;
 }
 
-/* Responsive Adjustments (Example) */
+/* Card Styles (for featured destinations, attractions, etc.) */
+.card {
+  background-color: var(--background-color); /* Slightly different bg for contrast */
+  padding: 1rem;
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow);
+  margin-bottom: 1rem;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-3px); /* Subtle lift effect */
+}
+
+.card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: calc(var(--card-border-radius) - 4px); /* Slightly smaller radius */
+    margin-bottom: 0.5rem;
+}
+
+.card h4 {
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+/* List Styles (for attractions, favorites) */
+ul {
+    list-style: none; /* Remove default bullets */
+    padding-left: 0; /* Remove default padding */
+}
+
+li {
+    margin-bottom: 0.5rem;
+}
+
+/* Map Container Placeholder */
+#map-container {
+    border-radius: var(--card-border-radius);
+    overflow: hidden; /* Ensure map stays within bounds */
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
   header {
     flex-direction: column;

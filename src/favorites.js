@@ -29,7 +29,8 @@ function displayFavorites() {
         const li = document.createElement('li');
         // Create a link to the destination page for the favorite
         const link = document.createElement('a');
-        link.href = `destination.html?query=${encodeURIComponent(favQuery)}`; // Use relative path
+        // Update link to include base path
+        link.href = `/Final-Project-Work/destination.html?query=${encodeURIComponent(favQuery)}`;
         link.textContent = decodeURIComponent(favQuery); // Display the saved query name
 
         // Optional: Add a remove button
