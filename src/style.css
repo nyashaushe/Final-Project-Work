@@ -202,28 +202,40 @@ button:focus-visible {
 
 /* Card Styles (for featured destinations, attractions, etc.) */
 .card {
-  background-color: var(--background-color); /* Slightly different bg for contrast */
-  padding: 1rem;
+  display: grid;
+  grid-template-rows: auto 1fr; /* Image on top, text below */
+  gap: 0.5rem;
+  background-color: transparent; /* Remove card background */
+  padding: 0;
   border-radius: var(--card-border-radius);
-  box-shadow: var(--card-shadow);
-  margin-bottom: 1rem;
+  box-shadow: none; /* Remove shadow */
+  margin-bottom: 0;
+  overflow: hidden;
   transition: transform 0.2s ease-in-out;
 }
 
 .card:hover {
-    transform: translateY(-3px); /* Subtle lift effect */
+    transform: scale(1.03); /* Slight zoom effect */
 }
 
 .card img {
-    max-width: 100%;
-    height: auto;
-    border-radius: calc(var(--card-border-radius) - 4px); /* Slightly smaller radius */
-    margin-bottom: 0.5rem;
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Square images */
+    object-fit: cover;
+    border-radius: var(--card-border-radius);
 }
 
 .card h4 {
-    margin-bottom: 0.5rem;
+    margin: 0;
+    font-size: 1rem;
     color: var(--primary-color);
+    padding: 0 0.5rem;
+}
+
+.card p {
+    margin: 0;
+    padding: 0 0.5rem 0.5rem;
+    font-size: 0.9rem;
 }
 
 /* List Styles (for attractions, favorites) */
@@ -268,4 +280,18 @@ li {
   .destination-page main#app {
     display: block; /* Override the grid for mobile */
   }
+}
+
+/* Grid Container for Attractions List */
+.attractions-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive columns for cards */
+  gap: 1rem; /* Spacing between attraction cards */
+}
+
+/* Ensure list itself doesn't add extra space */
+.attractions-grid-container ul {
+  padding: 0;
+  margin: 0; /* Remove default ul margin */
+  /* The li elements with class 'card' will act as grid items */
 }

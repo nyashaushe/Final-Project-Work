@@ -80,10 +80,17 @@ async function fetchAndDisplayAttractions(query) {
         console.log("Foursquare Data:", data); // Log for debugging
 
         const attractions = data.results || [];
-        displayAttractions(attractions); // Display attractions in the list
+
+        // Fetch photos for each attraction
+        const attractionsWithPhotos = await Promise.all(attractions.map(async (attraction) => {
+            const photoUrl = await fetchAttractionPhoto(attraction.fsq_id);
+            return { ...attraction, photoUrl }; // Add photoUrl to attraction object
+        }));
+
+        displayAttractions(attractionsWithPhotos); // Display attractions with photos
 
         // Initialize map after fetching attractions
-        initializeMap(attractions);
+        initializeMap(attractionsWithPhotos); // Pass attractions data to map
 
     } catch (error) {
         console.error("Error fetching attractions:", error);
@@ -107,18 +114,57 @@ function displayAttractions(attractions) {
 
         const name = attraction.name || 'Unnamed Attraction';
         const address = attraction.location?.formatted_address || 'Address not available';
-        // const category = attraction.categories?.[0]?.name || 'Uncategorized'; // Optional: display category
+        const photoUrl = attraction.photoUrl; // Get the photo URL added earlier
+
+        // Add image tag if photoUrl exists
+        const imageHtml = photoUrl
+            ? `<img src="${photoUrl}" alt="${name}" loading="lazy">` // Added loading="lazy"
+            : '<div class="no-image-placeholder" style="height: 150px; background: #ddd; text-align: center; line-height: 150px; color: #888; border-radius: 4px; margin-bottom: 0.5rem;">No Image</div>'; // Placeholder
 
         li.innerHTML = `
+            ${imageHtml}
             <h4>${name}</h4>
             <p>${address}</p>
             `;
-            // <p><small>Category: ${category}</small></p> // Optional
-
-        // TODO: Add image fetching if API provides photo URLs
+            // <p><small>Category: ${attraction.categories?.[0]?.name || 'Uncategorized'}</small></p> // Optional
 
         attractionsListElement.appendChild(li);
     });
+}
+
+// --- Fetch Photo for a Single Attraction ---
+async function fetchAttractionPhoto(fsq_id) {
+    if (!fsq_id) return null;
+
+    const options = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization: FOURSQUARE_API_KEY
+        }
+      };
+
+    const photoApiUrl = `https://api.foursquare.com/v3/places/${fsq_id}/photos?limit=1`; // Get only the first photo
+
+    try {
+        const response = await fetch(photoApiUrl, options);
+        if (!response.ok) {
+            // Don't throw error for photo failure, just return null
+            console.warn(`Could not fetch photo for ${fsq_id}: ${response.status}`);
+            return null;
+        }
+        const photos = await response.json();
+
+        if (photos && photos.length > 0) {
+            const photo = photos[0];
+            // Construct URL (e.g., medium size 300x300)
+            return `${photo.prefix}300x300${photo.suffix}`;
+        }
+        return null; // No photos found
+    } catch (error) {
+        console.error(`Error fetching photo for ${fsq_id}:`, error);
+        return null;
+    }
 }
 
 // --- Initialize Map ---
