@@ -47,6 +47,24 @@
   }
 }
 
+/* Grid layout for destination page sections (applies on larger screens) */
+.destination-page main#app {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
+  gap: 1.5rem; /* Spacing between grid items */
+}
+
+/* Optional: Span specific items if needed on larger screens */
+/* Example: Make map span 2 columns if there are 2 columns */
+/*
+@media (min-width: 769px) {
+  .destination-page main#app #map {
+      grid-column: span 2;
+  }
+}
+*/
+
+
 /* Basic Reset and Body Styles */
 *,
 *::before,
@@ -61,15 +79,14 @@ body {
   line-height: 1.6;
   color: var(--text-color);
   background-color: var(--background-color);
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr auto; /* header, main, footer */
   min-height: 100vh;
   transition: background-color 0.3s, color 0.3s;
 }
 
 /* General Layout */
 #app { /* Main content container */
-  flex-grow: 1; /* Allows footer to stick to bottom */
   max-width: 1200px; /* Max width for content */
   width: 90%; /* Responsive width */
   margin: 2rem auto; /* Centering and spacing */
@@ -139,7 +156,6 @@ footer {
   color: var(--header-footer-text);
   text-align: center;
   padding: 1rem;
-  margin-top: auto; /* Pushes footer to bottom */
 }
 
 /* Basic Form Styling */
@@ -246,5 +262,10 @@ li {
   #app {
     width: 95%;
     margin: 1rem auto;
+  }
+
+  /* On mobile, revert destination page main content to default block layout (stacking) */
+  .destination-page main#app {
+    display: block; /* Override the grid for mobile */
   }
 }

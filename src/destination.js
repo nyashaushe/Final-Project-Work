@@ -10,8 +10,9 @@ const mapContainer = document.getElementById('map-container'); // Map container 
 const currencyInfoElement = document.getElementById('currency-info');
 
 // --- Constants ---
-const FOURSQUARE_API_KEY = 'fsq3c9N6+/alfBbVPHOdUq+MNZGnJO0Lqf1cD8skPQH2CH4=';
-const EXCHANGE_RATE_API_KEY = '6c6888642f1baa0b3811d6b3';
+// API Keys are now read from environment variables
+const FOURSQUARE_API_KEY = import.meta.env.VITE_FOURSQUARE_API_KEY;
+const EXCHANGE_RATE_API_KEY = import.meta.env.VITE_EXCHANGE_RATE_API_KEY;
 const FAVORITES_KEY = 'travelExplorerFavorites'; // Consistent key with favorites.js
 
 // --- Function to get query parameter ---
@@ -63,7 +64,7 @@ async function fetchAndDisplayAttractions(query) {
         method: 'GET',
         headers: {
           accept: 'application/json',
-          Authorization: FOURSQUARE_API_KEY
+          Authorization: FOURSQUARE_API_KEY // Use the variable read from .env
         }
       };
 
@@ -187,6 +188,7 @@ function initializeMap(attractions) {
 // currency code from the query requires additional logic or another API.
 async function fetchAndDisplayCurrency(baseCurrency = 'USD') {
     currencyInfoElement.textContent = 'Loading currency info...';
+    // Use the variable read from .env
     const apiUrl = `https://v6.exchangerate-api.com/v6/${EXCHANGE_RATE_API_KEY}/latest/${baseCurrency}`;
 
     try {
