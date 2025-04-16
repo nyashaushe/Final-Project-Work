@@ -48,7 +48,8 @@ function handleSearch(event) {
         console.log(`Searching for: ${query}`);
         // Redirect to destination page with the query
         // Using URLSearchParams for clean parameter passing
-        window.location.href = `/destination.html?query=${encodeURIComponent(query)}`;
+        // Use relative path for GitHub Pages compatibility
+        window.location.href = `destination.html?query=${encodeURIComponent(query)}`;
     } else {
         alert("Please enter a destination to search for.");
     }
