@@ -8,6 +8,11 @@ const weatherInfoElement = document.getElementById('weather-info');
 const attractionsListElement = document.getElementById('attractions-list');
 const mapContainer = document.getElementById('map-container'); // Map container element
 const currencyInfoElement = document.getElementById('currency-info');
+const amountInput = document.getElementById('amount-input'); // Added amount input element
+
+// --- Global variable to store fetched rates ---
+let conversionRates = null;
+let baseCurrencyGlobal = 'USD'; // Store the base currency used for fetching
 
 // --- Constants ---
 // API Keys are now read from environment variables
@@ -329,8 +334,11 @@ async function fetchAndDisplayCurrency(baseCurrency = 'USD') {
         const data = await response.json();
 
         if (data.result === 'success') {
-            displayCurrency(data.conversion_rates, baseCurrency);
+            conversionRates = data.conversion_rates; // Store rates globally
+            baseCurrencyGlobal = baseCurrency; // Store base currency
+            displayCurrency(); // Call display without args initially (uses default amount 1)
         } else {
+            conversionRates = null; // Clear rates on error
             throw new Error(`ExchangeRate API error: ${data['error-type']}`);
         }
     } catch (error) {
@@ -340,19 +348,34 @@ async function fetchAndDisplayCurrency(baseCurrency = 'USD') {
 }
 
 // --- Display Currency in the DOM ---
-function displayCurrency(rates, baseCurrency) {
-    // Display rates for a few major currencies relative to the base
+function displayCurrency() {
+    if (!conversionRates) {
+        currencyInfoElement.textContent = 'Currency rates not available.';
+        return;
+    }
+
+    const amount = parseFloat(amountInput.value) || 0; // Get amount from input, default to 0 if invalid
+    const rates = conversionRates;
+    const baseCurrency = baseCurrencyGlobal;
+
+    // Display rates for a few major currencies relative to the input amount
     const targetCurrencies = ['EUR', 'GBP', 'JPY', 'CAD']; // Example targets
-    let html = `Rates based on 1 ${baseCurrency}:<ul>`;
+    let html = `Equivalent to ${amount.toFixed(2)} ${baseCurrency}:<ul>`;
 
     targetCurrencies.forEach(currency => {
         if (rates[currency]) {
-            html += `<li>1 ${baseCurrency} = ${rates[currency].toFixed(4)} ${currency}</li>`;
+            const convertedValue = amount * rates[currency];
+            html += `<li>${convertedValue.toFixed(4)} ${currency}</li>`;
         }
     });
 
     html += '</ul>';
     currencyInfoElement.innerHTML = html;
+}
+
+// --- Add event listener for the amount input ---
+if (amountInput) {
+    amountInput.addEventListener('input', displayCurrency); // Recalculate when input changes
 }
 
 
