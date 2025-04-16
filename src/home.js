@@ -28,8 +28,10 @@ function displayFeaturedDestinations() {
 
     featuredDestinations.forEach(dest => {
         const li = document.createElement('li');
-        li.style.marginBottom = '1rem'; // Basic spacing
+        li.className = 'card'; // Add the card class
+        // li.style.marginBottom = '1rem'; // Remove margin, grid gap will handle spacing
         li.innerHTML = `
+            <!-- <img src="${dest.image}" alt="${dest.name}" loading="lazy"> Placeholder -->
             <h4>${dest.name}</h4>
             <p>${dest.description}</p>
             <!-- <img src="${dest.image}" alt="${dest.name}" width="100"> Placeholder -->

@@ -3,7 +3,7 @@ console.log("Destination page script loaded.");
 
 // --- DOM Elements ---
 const destinationNameElement = document.getElementById('destination-name');
-const favoriteButton = document.getElementById('favorite-button');
+// const favoriteButton = document.getElementById('favorite-button'); // Removed
 const weatherInfoElement = document.getElementById('weather-info');
 const attractionsListElement = document.getElementById('attractions-list');
 const mapContainer = document.getElementById('map-container'); // Map container element
@@ -13,6 +13,7 @@ const currencyInfoElement = document.getElementById('currency-info');
 // API Keys are now read from environment variables
 const FOURSQUARE_API_KEY = import.meta.env.VITE_FOURSQUARE_API_KEY;
 const EXCHANGE_RATE_API_KEY = import.meta.env.VITE_EXCHANGE_RATE_API_KEY;
+const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY; // Added Weather API Key
 const FAVORITES_KEY = 'travelExplorerFavorites'; // Consistent key with favorites.js
 
 // --- Function to get query parameter ---
@@ -37,20 +38,74 @@ async function loadDestinationData() {
 
     destinationNameElement.textContent = `Details for ${decodeURIComponent(query)}`;
 
-    // TODO: Implement API calls
-    // 1. Fetch Weather Data (TODO)
-    // 2. Fetch Attractions Data
-    await fetchAndDisplayAttractions(query);
-    // 3. Fetch Currency Data
+    // Fetch data concurrently
+    await Promise.all([
+        fetchAndDisplayWeather(query),      // Fetch Weather
+        fetchAndDisplayAttractions(query), // Fetch Attractions
+        fetchAndDisplayCurrency()          // Fetch Currency
+    ]);
+    // 1. Fetch Weather Data - Handled above
+    // 2. Fetch Attractions Data - Handled above
+    // 3. Fetch Currency Data - Handled above
     await fetchAndDisplayCurrency(); // Assuming USD base for now
-    // 4. Initialize Map - Handled within fetchAndDisplayAttractions now
+    // 4. Initialize Map - Handled within fetchAndDisplayAttractions
 
     // Placeholder updates (remove as features are implemented):
-    weatherInfoElement.textContent = `Weather data for ${decodeURIComponent(query)} will be shown here.`;
+    // weatherInfoElement.textContent = `Weather data for ${decodeURIComponent(query)} will be shown here.`; // Removed placeholder
     // mapContainer.textContent = `Map for ${decodeURIComponent(query)} will be displayed here.`; // Removed placeholder
 
-    // Update favorite button state
-    updateFavoriteButton(query);
+    // Update favorite button state - Removed call to updateFavoriteButton(query);
+}
+
+
+// --- Fetch and Display Weather ---
+async function fetchAndDisplayWeather(query) {
+    if (!WEATHER_API_KEY) {
+        weatherInfoElement.textContent = 'Weather API key not configured.';
+        console.error('VITE_WEATHER_API_KEY is missing.');
+        return;
+    }
+    weatherInfoElement.textContent = 'Loading weather...';
+
+    // Use OpenWeatherMap API (Current Weather Data)
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(query)}&appid=${WEATHER_API_KEY}&units=metric`; // units=metric for Celsius
+
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`OpenWeatherMap API error: ${response.status} - ${errorData.message || response.statusText}`);
+        }
+        const data = await response.json();
+        console.log("Weather Data:", data); // Log for debugging
+
+        displayWeather(data);
+
+    } catch (error) {
+        console.error("Error fetching weather data:", error);
+        weatherInfoElement.textContent = 'Could not load weather information.';
+    }
+}
+
+// --- Display Weather in the DOM ---
+function displayWeather(data) {
+    if (!data || !data.weather || !data.main) {
+        weatherInfoElement.textContent = 'Weather data unavailable.';
+        return;
+    }
+
+    const description = data.weather[0]?.description || 'No description';
+    const temp = data.main.temp;
+    const feelsLike = data.main.feels_like;
+    const iconCode = data.weather[0]?.icon;
+    const iconUrl = iconCode ? `https://openweathermap.org/img/wn/${iconCode}@2x.png` : '';
+
+    weatherInfoElement.innerHTML = `
+        <img src="${iconUrl}" alt="${description}" style="vertical-align: middle; width: 50px; height: 50px;">
+        <span>${description.charAt(0).toUpperCase() + description.slice(1)}</span><br>
+        <span>Temperature: ${temp.toFixed(1)}°C</span><br>
+        <span>Feels like: ${feelsLike.toFixed(1)}°C</span>
+    `;
 }
 
 // --- Global variable for map instance ---
@@ -121,16 +176,44 @@ function displayAttractions(attractions) {
             ? `<img src="${photoUrl}" alt="${name}" loading="lazy">` // Added loading="lazy"
             : '<div class="no-image-placeholder" style="height: 150px; background: #ddd; text-align: center; line-height: 150px; color: #888; border-radius: 4px; margin-bottom: 0.5rem;">No Image</div>'; // Placeholder
 
+        // Create data object for the button
+        const attractionData = {
+            id: attraction.fsq_id,
+            name: name,
+            address: address,
+            // Add other relevant details if needed for favorites page later
+        };
+
         li.innerHTML = `
             ${imageHtml}
             <h4>${name}</h4>
             <p>${address}</p>
+            <button class="fav-attraction-btn" data-attraction='${JSON.stringify(attractionData)}'>
+                Add Attraction to Favs
+            </button>
             `;
             // <p><small>Category: ${attraction.categories?.[0]?.name || 'Uncategorized'}</small></p> // Optional
 
         attractionsListElement.appendChild(li);
+
+        // Set initial button state after appending
+        updateAttractionFavoriteButton(li.querySelector('.fav-attraction-btn'), attractionData.id);
     });
 }
+
+// --- Update Individual Attraction Favorite Button State ---
+// (Helper function to be called when displaying and after toggling)
+function updateAttractionFavoriteButton(buttonElement, attractionId) {
+    if (!buttonElement) return;
+    if (isAttractionFavorite(attractionId)) {
+        buttonElement.textContent = 'Remove Attraction Fav';
+        buttonElement.classList.add('is-favorite');
+    } else {
+        buttonElement.textContent = 'Add Attraction Fav';
+        buttonElement.classList.remove('is-favorite');
+    }
+}
+
 
 // --- Fetch Photo for a Single Attraction ---
 async function fetchAttractionPhoto(fsq_id) {
@@ -273,57 +356,62 @@ function displayCurrency(rates, baseCurrency) {
 }
 
 
-// --- Favorites Logic (adapted from favorites.js) ---
-function getFavorites() {
-    const favoritesJson = localStorage.getItem(FAVORITES_KEY);
-    return favoritesJson ? JSON.parse(favoritesJson) : [];
-}
+// --- Destination Favorites Logic (Removed) ---
+// Functions getFavorites, isFavorite, addFavorite, removeFavorite, updateFavoriteButton were removed
+// as the main destination favorite button is gone.
 
-function isFavorite(query) {
-    const favorites = getFavorites();
-    return favorites.includes(query);
-}
-
-function addFavorite(query) {
-    const favorites = getFavorites();
-    if (!favorites.includes(query)) {
-        favorites.push(query);
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-        console.log(`Added ${decodeURIComponent(query)} to favorites.`);
-    }
-}
-
-function removeFavorite(queryToRemove) {
-    let favorites = getFavorites();
-    favorites = favorites.filter(fav => fav !== queryToRemove);
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-    console.log(`Removed ${decodeURIComponent(queryToRemove)} from favorites.`);
-}
-
-function updateFavoriteButton(query) {
-    if (!favoriteButton) return;
-    if (isFavorite(query)) {
-        favoriteButton.textContent = 'Remove from Favorites';
-        favoriteButton.classList.add('is-favorite'); // Optional: for styling
-    } else {
-        favoriteButton.textContent = 'Add to Favorites';
-        favoriteButton.classList.remove('is-favorite'); // Optional: for styling
-    }
-}
 
 // --- Event Listeners ---
 document.addEventListener('DOMContentLoaded', loadDestinationData);
 
-if (favoriteButton) {
-    favoriteButton.addEventListener('click', () => {
-        const query = getQueryParam('query');
-        if (query) {
-            if (isFavorite(query)) {
-                removeFavorite(query);
-            } else {
-                addFavorite(query);
+// Removed event listener for favoriteButton
+
+
+// --- Attraction Favorites Logic ---
+const ATTRACTION_FAVORITES_KEY = 'travelExplorerAttractionFavorites';
+
+function getAttractionFavorites() {
+    const favoritesJson = localStorage.getItem(ATTRACTION_FAVORITES_KEY);
+    return favoritesJson ? JSON.parse(favoritesJson) : []; // Stores array of attraction objects
+}
+
+function isAttractionFavorite(attractionId) {
+    const favorites = getAttractionFavorites();
+    return favorites.some(fav => fav.id === attractionId);
+}
+
+function addAttractionFavorite(attractionData) {
+    const favorites = getAttractionFavorites();
+    if (!favorites.some(fav => fav.id === attractionData.id)) {
+        favorites.push(attractionData);
+        localStorage.setItem(ATTRACTION_FAVORITES_KEY, JSON.stringify(favorites));
+        console.log(`Added attraction ${attractionData.name} to favorites.`);
+    }
+}
+
+function removeAttractionFavorite(attractionId) {
+    let favorites = getAttractionFavorites();
+    favorites = favorites.filter(fav => fav.id !== attractionId);
+    localStorage.setItem(ATTRACTION_FAVORITES_KEY, JSON.stringify(favorites));
+    console.log(`Removed attraction ${attractionId} from favorites.`);
+}
+
+// --- Event Listener for Attraction Favorite Buttons (using delegation) ---
+if (attractionsListElement) {
+    attractionsListElement.addEventListener('click', (event) => {
+        const button = event.target.closest('.fav-attraction-btn');
+        if (button) {
+            try {
+                const attractionData = JSON.parse(button.dataset.attraction);
+                if (isAttractionFavorite(attractionData.id)) {
+                    removeAttractionFavorite(attractionData.id);
+                } else {
+                    addAttractionFavorite(attractionData);
+                }
+                updateAttractionFavoriteButton(button, attractionData.id); // Update this specific button
+            } catch (e) {
+                console.error("Error parsing attraction data from button:", e);
             }
-            updateFavoriteButton(query); // Update button text immediately
         }
     });
 }

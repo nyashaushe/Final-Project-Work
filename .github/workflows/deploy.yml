@@ -40,6 +40,7 @@ jobs:
         env: # Pass secrets as environment variables to the build process
           VITE_FOURSQUARE_API_KEY: ${{ secrets.VITE_FOURSQUARE_API_KEY }}
           VITE_EXCHANGE_RATE_API_KEY: ${{ secrets.VITE_EXCHANGE_RATE_API_KEY }}
+          VITE_WEATHER_API_KEY: ${{ secrets.VITE_WEATHER_API_KEY }} # Added Weather API Key Secret
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact

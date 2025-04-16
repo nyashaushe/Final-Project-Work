@@ -89,7 +89,7 @@ body {
 #app { /* Main content container */
   max-width: 1200px; /* Max width for content */
   width: 90%; /* Responsive width */
-  margin: 2rem auto; /* Centering and spacing */
+  margin: 3rem auto; /* Increased top/bottom margin for more spacing */
   padding: 1rem;
 }
 
@@ -203,15 +203,15 @@ button:focus-visible {
 /* Card Styles (for featured destinations, attractions, etc.) */
 .card {
   display: grid;
-  grid-template-rows: auto 1fr; /* Image on top, text below */
+  grid-template-rows: auto auto 1fr; /* Image, Title, Description */
   gap: 0.5rem;
-  background-color: transparent; /* Remove card background */
-  padding: 0;
+  background-color: var(--card-bg-color); /* Use theme variable for background */
+  padding: 1rem; /* Add padding inside the card */
   border-radius: var(--card-border-radius);
-  box-shadow: none; /* Remove shadow */
-  margin-bottom: 0;
+  box-shadow: var(--card-shadow); /* Restore subtle shadow */
+  margin-bottom: 0; /* Let the grid gap handle spacing */
   overflow: hidden;
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .card:hover {
@@ -220,22 +220,34 @@ button:focus-visible {
 
 .card img {
     width: 100%;
-    aspect-ratio: 1 / 1; /* Square images */
+    aspect-ratio: 16 / 9; /* More standard image ratio */
     object-fit: cover;
-    border-radius: var(--card-border-radius);
+    border-radius: calc(var(--card-border-radius) / 2); /* Slightly smaller radius for image */
+    margin-bottom: 0.5rem; /* Space below image */
+    grid-row: 1; /* Ensure image is first */
 }
+
+.card .no-image-placeholder {
+    grid-row: 1; /* Ensure placeholder is first */
+    margin-bottom: 0.5rem; /* Space below placeholder */
+    aspect-ratio: 16 / 9; /* Match image ratio */
+    height: auto; /* Override fixed height */
+}
+
 
 .card h4 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.1rem; /* Slightly larger title */
     color: var(--primary-color);
-    padding: 0 0.5rem;
+    padding: 0; /* Remove extra padding */
+    grid-row: 2; /* Ensure title is second */
 }
 
 .card p {
     margin: 0;
-    padding: 0 0.5rem 0.5rem;
+    padding: 0; /* Remove extra padding */
     font-size: 0.9rem;
+    grid-row: 3; /* Ensure description is third */
 }
 
 /* List Styles (for attractions, favorites) */
@@ -276,22 +288,38 @@ li {
     margin: 1rem auto;
   }
 
-  /* On mobile, revert destination page main content to default block layout (stacking) */
-  .destination-page main#app {
-    display: block; /* Override the grid for mobile */
-  }
+  /* Let the auto-fit grid handle stacking on mobile naturally */
+  /* Removed the display: block override for .destination-page main#app */
 }
 
-/* Grid Container for Attractions List */
+/* Flex Container for Attractions List */
 .attractions-grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive columns for cards */
+  display: flex; /* Use Flexbox */
+  flex-wrap: wrap; /* Allow items to wrap */
   gap: 1rem; /* Spacing between attraction cards */
+  /* Remove grid-specific properties if any were added */
 }
 
-/* Ensure list itself doesn't add extra space */
+/* Adjustments for flex items (the cards) */
+.attractions-grid-container .card {
+  /* Define flex basis for responsiveness, e.g., aim for ~200px */
+  flex: 1 1 200px;
+  /* Max width can prevent cards from becoming too wide on some layouts */
+  max-width: calc(50% - 0.5rem); /* Example: 2 columns max with gap */
+}
+
+/* Ensure list itself doesn't interfere */
 .attractions-grid-container ul {
   padding: 0;
-  margin: 0; /* Remove default ul margin */
-  /* The li elements with class 'card' will act as grid items */
+  margin: 0;
+  display: contents; /* Make the ul not affect flex layout directly */
+}
+
+/* Grid Container for Featured Destinations List */
+#featured-list ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
+  gap: 1.5rem; /* Spacing between cards */
+  padding: 0;
+  margin: 0;
 }
